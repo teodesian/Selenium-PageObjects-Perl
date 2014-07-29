@@ -82,6 +82,12 @@ Example Usage:
 >
 > }
 
+How the test author should end up using this:
+
+> use Selenium::Remote::Driver;
+>
+> use SomePage; #The module we made above
+>
 > my $webDriver = Selenium::Remote::Driver->new({'remote_server_addr' => 'localhost');
 >
 > $webDriver->get('http://my-app.test/');

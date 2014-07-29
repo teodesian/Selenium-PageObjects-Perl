@@ -19,7 +19,7 @@ sub new {
         'page'       => $uri
     };
 
-    $self->{'drivertype'} ?  $driver->open($url) : $driver->get($url); #Get initial page based on what type of driver used
+    $self->{'drivertype'} ?  $driver->open($url) : $driver->get($uri); #Get initial page based on what type of driver used
 
     bless $self, $class;
     return $self;
@@ -34,6 +34,7 @@ sub getElement {
         try {
             $element = $self->{'driver'}->find_element($selector,$selectortype);
         } catch {
+            print "# $_ \n";
             $element = undef;
         }
     }
@@ -46,9 +47,8 @@ sub getElements {
     confess ("WWW::Selenium is designed to work with single elements.  Consider refining your selectors and looping instead.") if $self->{'drivertype'};
     try {
         @elements = $self->{'driver'}->find_elements($selector,$selectortype);
-    }
-
-    return map {Selenium::Element->new($_,$self->{'drivertype'})} @elements;
+    };
+    return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'})} @elements;
 }
 
 1;

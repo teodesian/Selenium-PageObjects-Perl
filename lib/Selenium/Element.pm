@@ -58,7 +58,7 @@ sub is_textinput {
 sub is_select {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
-    return $self->get_type() eq 'select';
+    return $self->get_tag_name() eq 'select';
 }
 
 sub is_radio {
@@ -96,7 +96,7 @@ sub is_option {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
     confess("WWW::Selenium does not support getting tag type of elements") if $self->{'driver'};
-    return $self->get_tag_name() eq 'form';
+    return $self->get_tag_name() eq 'option';
 }
 
 sub is_enabled {
@@ -118,7 +118,7 @@ sub get_options {
         my @labels = $self->{'driver'}->get_select_options($self->{'element'});
         return map {Selenium::Element->new("css=option[value=$_]",$self->{'driver'})} @labels;
     }
-    my @opts = $self->{'element'}->{'driver'}->get_child_elements($self->{'element'},'option','tag_name');
+    my @opts = $self->{'element'}->{'driver'}->find_child_elements($self->{'element'},'option','tag_name');
     return map {Selenium::Element->new($_,0)} @opts;
 }
 
@@ -128,7 +128,7 @@ sub has_option {
     confess("Object parameters must be called by an instance") unless ref($self);
     confess("Option must be passed as argument") unless defined($option);
     return 0 if !$self->is_select();
-    return scalar(grep {$_ eq $option} $self->get_options());
+    return scalar(grep {$_->name eq $option} $self->get_options());
 }
 
 sub set {
@@ -218,6 +218,16 @@ sub get {
     } else {
         carp("Don't know how to get value from a non-input element!");
     }
+}
+
+sub id {
+    my $self = shift;
+    return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'id') : $self->{'element'}->get_attribute('id');
+}
+
+sub name {
+    my $self = shift;
+    return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'name') : $self->{'element'}->get_attribute('name');
 }
 
 sub click {

@@ -1,0 +1,8 @@
+Makefile.PL
+README
+Changes
+LICENSE
+lib/Selenium/PageObject.pm
+lib/Selenium/Element.pm
+t/Selenium-PageObject.t
+t/test.html

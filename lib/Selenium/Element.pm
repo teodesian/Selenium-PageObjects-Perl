@@ -27,7 +27,7 @@ sub get_tag_name {
         #TODO If you can't do it with both of these, you have no business doing it...but this could be expanded to everything eventually...
         confess('WWW::Selenium drivers can only get tag name if selector is of type "id" or "css"') unless scalar(grep {$_ eq $parts[0]} qw(id css));
         $js = $parts[0] eq 'id' ? 'document.getElementById("'.$parts[1].'").nodeName' : 'document.querySelectorAll("'.$parts[1].'")[0].nodeName';
-        return lc($self->{'driver'}->get_eval($js));
+        return lc($self->javascript($js));
     }
     return $self->{'element'}->get_tag_name();
 }
@@ -178,11 +178,7 @@ sub set {
             confess("Setting values on hidden elements without IDs not supported") unless $self->id;
             carp("Setting value of hidden element, this may result in unexpected behavior!");
             $js = 'document.getElementById("'.$self->id.'").value = \''.$value.'\';';
-            if ($self->{'driver'}) {
-                $self->{'element'}->get_eval($js);
-            } else {
-                $self->{'element'}->{'driver'}->execute_script($js);
-            }
+            $self->javascript($js);
             $ret = 1;
         } elsif ($self->is_select) {
             $value = [$value] if reftype($value) ne 'ARRAY';
@@ -192,21 +188,38 @@ sub set {
                 }
             } else {
                 foreach my $val ($self->get_options()) {
-                    print "#not ok @$value\n";
-                    $val->click() if grep {$val->{'element'}->get_attribute('name') eq $_ } @$value; #XXX not sure how well this works with multiselect?
+                    if (grep {$val->{'element'}->get_attribute('name') eq $_ } @$value) {
+                        #Leave values high if they are requested
+                        $val->click if !$val->is_selected;
+                    } else {
+                        #otherwise ensure low values
+                        $val->click if $val->is_selected;
+                    }
                 }
             }
             $ret = 1;
         } elsif ($self->is_option) {
-            $self->click;
+            my $current = $self->get;
+            $self->click if ( (!$current && $value) || ($current && !$value) );
         } else {
             confess("Don't know how to set value to a non-input element!");
         }
     }
 
     #Can't set anything else!
-    return $ret unless $callback;
-    return &$callback($self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+    return $self->_doCallback($callback) || $ret;
+}
+
+sub _doCallback {
+    my ($self,$cb) = @_;
+    return 0 if !$cb;
+    return &$cb($self,$self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+}
+
+sub javascript {
+    my ($self, $js) = @_;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    return $self->{'driver'} ? $self->{'element'}->get_eval($js) : $self->{'element'}->{'driver'}->execute_script($js);
 }
 
 sub clear {
@@ -217,7 +230,7 @@ sub clear {
         #TODO If you can't do it with both of these, you have no business doing it...but this could be expanded to everything eventually...
         confess('WWW::Selenium drivers can only clear text if selector is of type "id" or "css"') unless scalar(grep {$_ eq $self->{'selector'}->[1]} qw(id css));
         $js = $self->{'selector'}->[1] eq 'id' ? 'document.getElementById("'.$self->{'selector'}->[0].'").value = ""' : 'document.querySelectorAll("'.$self->{'selector'}->[0].'")[0].value = ""';
-        $self->{'driver'}->get_eval($js);
+        $self->javascript($js);
     } else {
         $self->{'element'}->clear();
     }
@@ -242,13 +255,15 @@ sub get {
         return $self->{'driver'} ? $self->{'driver'}->is_checked() : $self->{'element'}->is_selected();
     } elsif ($self->is_select) {
         if ($self->is_multiselect) {
-            my @options = grep {defined $_} map {$_->is_selected ? $_->get : undef} $self->get_options;
+            my @options = grep {defined $_} map {$_->is_selected ? $_->name : undef} $self->get_options;
             return \@options;
         } else {
             return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
         }
-    } elsif ($self->is_option || $self->is_hiddeninput || $self->is_fileinput || $self->is_textinput) {
+    } elsif ( $self->is_hiddeninput || $self->is_fileinput || $self->is_textinput) {
         return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
+    } elsif ($self->is_option) {
+        return $self->{'driver'} ? defined $self->{'driver'}->get_attribute($self->{'element'},'selected') : defined $self->{'element'}->get_attribute('selected');
     } else {
         carp("Don't know how to get value from a non-input element!");
     }
@@ -270,8 +285,7 @@ sub click {
     confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
     $self->{'driver'} ? $self->{'driver'}->click($self->{'element'}) : $self->{'element'}->click();
 
-    return 1 unless $callback;
-    return &$callback($self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+    return $self->_doCallback($callback) || 1;
 }
 
 sub submit {
@@ -281,8 +295,7 @@ sub submit {
     return 0 if !$self->is_form();
     $self->{'driver'} ? $self->{'driver'}->submit($self->{'element'}) : $self->{'element'}->submit();
 
-    return 1 unless $callback;
-    return &$callback($self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+    return $self->_doCallback($callback) || 1;
 }
 
 1;

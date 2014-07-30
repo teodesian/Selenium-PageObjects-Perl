@@ -47,7 +47,6 @@ my $value;
 #Get all the inputs for the form
 @inputs = $pod->getElements('#testForm input, #testForm textarea, #testForm select, #testForm select option','css');
 foreach my $input (@inputs) {
-    note $input->id;
     subtest 'Element state is as expected' => sub {
         isa_ok($input,"Selenium::Element");
         ok($input->get_tag_name,"Can get tag name using WebDriver");
@@ -74,7 +73,7 @@ foreach my $input (@inputs) {
         ok($value == 0,"Get returns bool for radio button") if $input->is_radio;
         like($value,qr/JUKEBOX HERO|guitar|foreigner/,"Get returns text for text inputs") if $input->is_textinput;
         is($value,'Is it obvious I was listening to Foreigner when I wrote this?',"Can get string value of hidden inputs") if $input->is_hiddeninput;
-        like($value,qr/option[1-6]/, "Can get value of option") if $input->is_option;
+        ok(!!$value == 0 || !!$value == 1, "Can get value of option") if $input->is_option;
         ok($value == '', "Can get value of file input") if $input->is_fileinput;
 
         if ($input->is_select && !$input->is_multiselect) {
@@ -99,7 +98,10 @@ foreach my $input (@inputs) {
         }
         if ($input->is_option) {
             $input->set(1);
-            ok($input->get == 1,"Can set option on/off");
+            ok($input->get == 1,"Can set option on");
+            $input->set(0);
+            ok($input->get == 0,"Can set option off in multi-select") if grep {$input->name eq $_} qw(option5 option6 option7);
+            ok($input->set(1,sub {my $self=shift; return $self->get;}) == 1,"Verify callbacks work as expected for set");
         }
     };
 }

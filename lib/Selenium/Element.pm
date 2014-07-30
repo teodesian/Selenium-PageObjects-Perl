@@ -61,6 +61,13 @@ sub is_select {
     return $self->get_tag_name() eq 'select';
 }
 
+sub is_multiselect {
+    my $self = shift;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    return 0 if !$self->is_select;
+    return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'multiple') : $self->{'element'}->get_attribute('multiple');
+}
+
 sub is_radio {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
@@ -97,6 +104,12 @@ sub is_option {
     confess("Object parameters must be called by an instance") unless ref($self);
     confess("WWW::Selenium does not support getting tag type of elements") if $self->{'driver'};
     return $self->get_tag_name() eq 'option';
+}
+
+sub is_hiddeninput {
+    my $self = shift;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    return $self->get_type() eq 'hidden';
 }
 
 sub is_enabled {
@@ -199,21 +212,36 @@ sub clear {
     return 1;
 }
 
+sub is_selected {
+    my $self = shift;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    confess("Element must be option to check if selected") unless $self->is_option;
+    return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'selected') : $self->{'element'}->get_attribute('selected');
+}
+
 sub get {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
 
     my $ret = 0;
 
-    #Try to set various stuff based on what it is
+    #Try to get various stuff based on what it is
     if ($self->is_checkbox || $self->is_radio) {
         return $self->{'driver'} ? $self->{'driver'}->is_checked() : $self->{'element'}->is_selected();
     } elsif ($self->is_textinput) {
-        return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_text();
-    } elsif ($self->is_fileinput) {
-        return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
+        if ($self->get_tag_name eq 'textarea') {
+            return $self->{'driver'} ? $self->{'driver'}->get_text($self->{'element'},'value') : $self->{'element'}->get_text();
+        } else {
+            return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
+        }
     } elsif ($self->is_select) {
-        #TODO return a list via a babycart?
+        if ($self->is_multiselect) {
+            my @options = grep {defined $_} map {$_->is_selected ? $_->get : undef} $self->get_options;
+            return \@options;
+        } else {
+            return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
+        }
+    } elsif ($self->is_option || $self->is_hiddeninput || $self->is_fileinput) {
         return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
     } else {
         carp("Don't know how to get value from a non-input element!");

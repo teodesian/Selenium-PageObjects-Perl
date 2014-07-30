@@ -1,5 +1,6 @@
 use Test::More;
 use Test::Fatal;
+use Test::Deep;
 
 use Selenium::Remote::Driver;
 #use WWW::Selenium;
@@ -59,10 +60,31 @@ foreach my $input (@inputs) {
         ok($input->is_option,"Element correctly reported as not option") if grep {$_ eq $input->name} qw('option1 option2 option3');
         ok($input->is_checkbox,"Element correctly reported as not cb") if $input->id eq 'cb4';
         ok(!$input->has_option('someOption'),"Cannot get options for non-select") if $input->get_tag_name ne 'select';
-        ok($input->has_option('option2'),"Can get options for select") if $input->get_tag_name eq 'select';
+        ok($input->has_option('option2'),"Can get options for select") if $input->get_tag_name eq 'select' && !$input->is_multiselect;
+        ok($input->has_option('option5'),"Can get options for multi-select")if $input->is_multiselect;
+        ok($input->is_hiddeninput,"Can get whether input is hidden") if $input->id eq 'urgent';
+    };
+    subtest 'Getters/Setters work as desired' => sub {
         #Test getters/setters
-        $value = $input->get();
-        diag explain $value;
+        $value = $input->get;
+        is($value,"option1","Get returns current selection for single select") if $input->is_select && !$input->is_multiselect;
+        cmp_deeply($value,['option4','option6'],"Get returns current selections as ARRAY for multi select") if $input->is_multiselect;
+        ok($value == 0,"Get returns bool for checkbox") if $input->is_checkbox;
+        ok($value == 0,"Get returns bool for radio button") if $input->is_radio;
+        like($value,qr/JUKEBOX HERO|guitar|foreigner/,"Get returns text for textarea") if $input->is_textinput;
+        is($value,'Is it obvious I was listening to Foreigner when I wrote this?',"Can get string value of hidden inputs") if $input->is_hiddeninput;
+        like($value,qr/option[1-6]/, "Can get value of option") if $input->is_option;
+        ok($value == '', "Can get value of file input") if $input->is_fileinput;
+
+        #if ($input->is_select && !$input->is_multiselect) {
+        #    $input->set('option2')
+        #    is($input->get,'option2',"Set ");
+        #}
+        #$input->set(['option5']) if if $input->is_multiselect;
+        #$input->set(1) if $input->is_checkbox;
+        #TODO radio
+        #$input->set("whee") if $input->is_textinput || $input->is_hiddeninput || $input->is_file;
+        #$input->set(
     };
 }
 

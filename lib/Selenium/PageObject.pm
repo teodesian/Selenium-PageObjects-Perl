@@ -34,7 +34,7 @@ sub getElement {
         try {
             $element = $self->{'driver'}->find_element($selector,$selectortype);
         } catch {
-            print "# $_ \n";
+            carp "# $_ \n";
             $element = undef;
         }
     }

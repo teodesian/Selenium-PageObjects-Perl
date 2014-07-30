@@ -1,9 +1,12 @@
-use Test::More;
+use strict;
+use warnings;
+
+use Test::More 'tests' => 60;
 use Test::Fatal;
 use Test::Deep;
 
 use Selenium::Remote::Driver;
-#use WWW::Selenium;
+use WWW::Selenium;
 use Selenium::Server;
 use Selenium::PageObject;
 
@@ -28,6 +31,21 @@ my $remote_fname = dirname($webd->upload_file( "$dir/test.html" ));
 my $pod = Selenium::PageObject->new($webd,"file://$remote_fname$dir/test.html");
 isa_ok($pod,"Selenium::PageObject");
 
+my $element = $pod->getElement('paragraph1','id');
+isa_ok($element,"Selenium::Element");
+is($element->get_tag_name,"p","Can get tag name using WebDriver");
+ok(!$element->is_form,"Can get if element is form using WebDriver");
+ok(!$element->get_type(),"Cannot get type of non-input");
+ok(!$element->is_textinput,"Element correctly reported as not textinput");
+ok(!$element->is_fileinput,"Element correctly reported as not fileinput");
+ok(!$element->is_radio,"Element correctly reported as not radio");
+ok(!$element->is_select,"Element correctly reported as not select");
+ok(!$element->is_option,"Element correctly reported as not option");
+ok(!$element->is_checkbox,"Element correctly reported as not cb");
+ok(!$element->has_option('someOption'),"Cannot get options for non-select");
+is($element->get,'BIX NOOD',"get() on non-inputs returns innerText");
+like(exception {$element->set('whee')},qr/non-input/,"Cannot set non-input");
+
 #Get the form element
 $element = $pod->getElement('testForm','id');
 isa_ok($element,"Selenium::Element");
@@ -45,7 +63,7 @@ ok(!$element->has_option('someOption'),"Cannot get options for non-select");
 my $value;
 
 #Get all the inputs for the form
-@inputs = $pod->getElements('#testForm input, #testForm textarea, #testForm select, #testForm select option','css');
+my @inputs = $pod->getElements('#testForm input, #testForm textarea, #testForm select, #testForm select option','css');
 foreach my $input (@inputs) {
     subtest 'Element state is as expected' => sub {
         isa_ok($input,"Selenium::Element");
@@ -106,14 +124,48 @@ foreach my $input (@inputs) {
     };
 }
 
-
 ok($element->submit(),"Can submit a form");
 
-#TODO WWW::Selenium Tests.
-#my $sel  = WWW::Selenium->new('host' => 'localhost');
-#my $powd = Selenium::PageObject->new($sel,"file://$dir/test.html");
 
+#WWW::Selenium Tests.
+my $sel  = WWW::Selenium->new('host' => $host, 'browser' => "*$browser_name",'browser_url' => "http://nic.com"); #beats me why it whines if you don't have some page to go to???
+$sel->start;
+my $pows = Selenium::PageObject->new($sel,"file://$remote_fname$dir/test.html");
+
+isa_ok($pod,"Selenium::PageObject");
+
+$element = $pod->getElement('paragraph1','id');
+isa_ok($element,"Selenium::Element");
+BAIL_OUT "Selenium could not be communicated with.  Use of WWW::Selenium is only intended for legacy installations." if !$element;
+is($element->get_tag_name,"p","Can get tag name using WebDriver");
+ok(!$element->is_form,"Can get if element is form using WebDriver");
+ok(!$element->get_type(),"Cannot get type of non-input");
+ok(!$element->is_textinput,"Element correctly reported as not textinput");
+ok(!$element->is_fileinput,"Element correctly reported as not fileinput");
+ok(!$element->is_radio,"Element correctly reported as not radio");
+ok(!$element->is_select,"Element correctly reported as not select");
+ok(!$element->is_option,"Element correctly reported as not option");
+ok(!$element->is_checkbox,"Element correctly reported as not cb");
+ok(!$element->has_option('someOption'),"Cannot get options for non-select");
+is($element->get,'BIX NOOD',"get() on non-inputs returns innerText");
+like(exception {$element->set('whee')},qr/non-input/,"Cannot set non-input");
+
+#Get the form element
+$element = $pod->getElement('testForm','id');
+isa_ok($element,"Selenium::Element");
+is($element->get_tag_name,"form","Can get tag name using WebDriver");
+ok($element->is_form,"Can get if element is form using WebDriver");
+ok(!$element->get_type(),"Cannot get type of non-input");
+ok(!$element->is_textinput,"Element correctly reported as not textinput");
+ok(!$element->is_fileinput,"Element correctly reported as not fileinput");
+ok(!$element->is_radio,"Element correctly reported as not radio");
+ok(!$element->is_select,"Element correctly reported as not select");
+ok(!$element->is_option,"Element correctly reported as not option");
+ok(!$element->is_checkbox,"Element correctly reported as not cb");
+ok(!$element->has_option('someOption'),"Cannot get options for non-select");
+
+$sel->stop();
+#Gotta keep our tmpfile there
 $webd->quit();
-#$server->stop();
 
-done_testing();
+#$server->stop();

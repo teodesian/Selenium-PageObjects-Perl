@@ -265,7 +265,7 @@ sub get {
     } elsif ($self->is_option) {
         return $self->{'driver'} ? defined $self->{'driver'}->get_attribute($self->{'element'},'selected') : defined $self->{'element'}->get_attribute('selected');
     } else {
-        carp("Don't know how to get value from a non-input element!");
+        $self->{'driver'} ? $self->{'driver'}->get_text($self->{'element'}) : $self->{'element'}->get_text();
     }
 }
 

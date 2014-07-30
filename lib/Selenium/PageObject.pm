@@ -38,7 +38,7 @@ sub getElement {
             $element = undef;
         }
     }
-    return Selenium::Element->new($element,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'});
+    return Selenium::Element->new($element,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype]);
 }
 
 sub getElements {
@@ -48,7 +48,7 @@ sub getElements {
     try {
         @elements = $self->{'driver'}->find_elements($selector,$selectortype);
     };
-    return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'})} @elements;
+    return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype])} @elements;
 }
 
 1;

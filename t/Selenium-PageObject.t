@@ -47,6 +47,7 @@ my $value;
 #Get all the inputs for the form
 @inputs = $pod->getElements('#testForm input, #testForm textarea, #testForm select, #testForm select option','css');
 foreach my $input (@inputs) {
+    note $input->id;
     subtest 'Element state is as expected' => sub {
         isa_ok($input,"Selenium::Element");
         ok($input->get_tag_name,"Can get tag name using WebDriver");
@@ -71,20 +72,35 @@ foreach my $input (@inputs) {
         cmp_deeply($value,['option4','option6'],"Get returns current selections as ARRAY for multi select") if $input->is_multiselect;
         ok($value == 0,"Get returns bool for checkbox") if $input->is_checkbox;
         ok($value == 0,"Get returns bool for radio button") if $input->is_radio;
-        like($value,qr/JUKEBOX HERO|guitar|foreigner/,"Get returns text for textarea") if $input->is_textinput;
+        like($value,qr/JUKEBOX HERO|guitar|foreigner/,"Get returns text for text inputs") if $input->is_textinput;
         is($value,'Is it obvious I was listening to Foreigner when I wrote this?',"Can get string value of hidden inputs") if $input->is_hiddeninput;
         like($value,qr/option[1-6]/, "Can get value of option") if $input->is_option;
         ok($value == '', "Can get value of file input") if $input->is_fileinput;
 
-        #if ($input->is_select && !$input->is_multiselect) {
-        #    $input->set('option2')
-        #    is($input->get,'option2',"Set ");
-        #}
-        #$input->set(['option5']) if if $input->is_multiselect;
-        #$input->set(1) if $input->is_checkbox;
-        #TODO radio
-        #$input->set("whee") if $input->is_textinput || $input->is_hiddeninput || $input->is_file;
-        #$input->set(
+        if ($input->is_select && !$input->is_multiselect) {
+            $input->set('option2');
+            is($input->get,'option2',"Set single select to specified option succeeds");
+        }
+        if ($input->is_multiselect) {
+            $input->set(['option5']);
+            cmp_deeply($input->get,['option5'],"Can set multi-select with ARRAYREF");
+        }
+        if ($input->is_checkbox || $input->is_radio) {
+            $input->set(1);
+            ok($input->get == 1, "Can set radio/checkboxes");
+        }
+        if ($input->is_fileinput) {
+            $input->set("$remote_fname$dir/test.html"); #upload ourself, whee
+            is($input->get,"test.html","Can set file fields with string");
+        }
+        if ($input->is_textinput || $input->is_hiddeninput) {
+            $input->set("whee");
+            is($input->get,'whee',"Can set text/hidden fields with string");
+        }
+        if ($input->is_option) {
+            $input->set(1);
+            ok($input->get == 1,"Can set option on/off");
+        }
     };
 }
 

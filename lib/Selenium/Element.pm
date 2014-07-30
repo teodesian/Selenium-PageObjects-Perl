@@ -4,14 +4,15 @@ use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
 
 sub new {
-    my ($class,$element,$driver) = @_;
+    my ($class,$element,$driver,$selector) = @_;
     confess("Constructor must be called statically, not by an instance") if ref($class);
     return undef if !$element;
     confess("Element driver invalid: must be WWW::Selenium object or false (element is a Selenium::Remote::Webelement)") unless $driver == 0 || (blessed($driver) && blessed($driver) eq 'WWW::Selenium' );
 
     my $self = {
         'driver' => $driver,
-        'element' => $element
+        'element' => $element,
+        'selector' => $selector
     };
 
     bless $self, $class;
@@ -115,7 +116,6 @@ sub is_hiddeninput {
 sub is_enabled {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
-    return 0 unless $self->is_input();
     #Note that this will be more or less a no-op for WWW::Selenium, as there's no real way to get the tag name, so we will never see this branch
     return $self->{'driver'} ? $self->{'driver'}->is_editable($self->{'element'}) : $self->{'element'}->is_enabled();
 }
@@ -150,7 +150,7 @@ sub set {
     confess("Value must be passed to set") unless defined($value);
     confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
 
-    my $enabled = $self-is_enabled();
+    my $enabled = $self->is_enabled();
     carp "Attempting to set disabled element" unless $enabled;
     return undef unless $enabled;
     my $ret = 0;
@@ -170,8 +170,18 @@ sub set {
             if ($self->{'driver'}) {
                 $self->{'driver'}->attach_file($self->{'element'},$value);
             } else {
-                $self->{'element'}->clear();
-                $self->send_keys($value);
+                $self->{'element'}->send_keys($value);
+            }
+            $ret = 1;
+        } elsif ($self->is_hiddeninput) {
+            #TODO make this work a bit more universally if possible
+            confess("Setting values on hidden elements without IDs not supported") unless $self->id;
+            carp("Setting value of hidden element, this may result in unexpected behavior!");
+            $js = 'document.getElementById("'.$self->id.'").value = \''.$value.'\';';
+            if ($self->{'driver'}) {
+                $self->{'element'}->get_eval($js);
+            } else {
+                $self->{'element'}->{'driver'}->execute_script($js);
             }
             $ret = 1;
         } elsif ($self->is_select) {
@@ -182,12 +192,15 @@ sub set {
                 }
             } else {
                 foreach my $val ($self->get_options()) {
-                    $val->{'element'}->click() if grep {$val->{'driver'}->get_attribute('name') eq $_ } @$value; #XXX not sure how well this works with multiselect?
+                    print "#not ok @$value\n";
+                    $val->click() if grep {$val->{'element'}->get_attribute('name') eq $_ } @$value; #XXX not sure how well this works with multiselect?
                 }
             }
             $ret = 1;
+        } elsif ($self->is_option) {
+            $self->click;
         } else {
-            carp("Don't know how to set value to a non-input element!");
+            confess("Don't know how to set value to a non-input element!");
         }
     }
 
@@ -201,10 +214,9 @@ sub clear {
     confess("Object parameters must be called by an instance") unless ref($self);
     confess("Element must be text") unless $self->is_textinput();
     if ($self->{'driver'}) {
-        @parts = split(qr/=/,$self-{'element'});
         #TODO If you can't do it with both of these, you have no business doing it...but this could be expanded to everything eventually...
-        confess('WWW::Selenium drivers can only clear text if selector is of type "id" or "css"') unless scalar(grep {$_ eq $parts[0]} qw(id css));
-        $js = $parts[0] eq 'id' ? 'document.getElementById("'.$parts[1].'").value = ""' : 'document.querySelectorAll("'.$parts[1].'")[0].value = ""';
+        confess('WWW::Selenium drivers can only clear text if selector is of type "id" or "css"') unless scalar(grep {$_ eq $self->{'selector'}->[1]} qw(id css));
+        $js = $self->{'selector'}->[1] eq 'id' ? 'document.getElementById("'.$self->{'selector'}->[0].'").value = ""' : 'document.querySelectorAll("'.$self->{'selector'}->[0].'")[0].value = ""';
         $self->{'driver'}->get_eval($js);
     } else {
         $self->{'element'}->clear();
@@ -228,12 +240,6 @@ sub get {
     #Try to get various stuff based on what it is
     if ($self->is_checkbox || $self->is_radio) {
         return $self->{'driver'} ? $self->{'driver'}->is_checked() : $self->{'element'}->is_selected();
-    } elsif ($self->is_textinput) {
-        if ($self->get_tag_name eq 'textarea') {
-            return $self->{'driver'} ? $self->{'driver'}->get_text($self->{'element'},'value') : $self->{'element'}->get_text();
-        } else {
-            return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
-        }
     } elsif ($self->is_select) {
         if ($self->is_multiselect) {
             my @options = grep {defined $_} map {$_->is_selected ? $_->get : undef} $self->get_options;
@@ -241,7 +247,7 @@ sub get {
         } else {
             return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
         }
-    } elsif ($self->is_option || $self->is_hiddeninput || $self->is_fileinput) {
+    } elsif ($self->is_option || $self->is_hiddeninput || $self->is_fileinput || $self->is_textinput) {
         return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
     } else {
         carp("Don't know how to get value from a non-input element!");

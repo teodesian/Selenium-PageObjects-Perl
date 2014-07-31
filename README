@@ -1,0 +1,6 @@
+Selenium::PageObject - A pageObject factory for perl
+
+Works with both Selenium::Remote::Driver and WWW::Selenium, but the capabilities of the latter are reduced for obvious reasons.
+So try not to use WWW::Selenium.
+
+See https://github.com/teodesian/Selenium-PageObjects-Perl for more info

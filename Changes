@@ -1,0 +1,3 @@
+v0.002 - Added POD
+v0.003 - Corrected POD errors, added tab() method
+v0.004 - use strict/warnings, fixed an issue in the WWW::Selenium bootup code

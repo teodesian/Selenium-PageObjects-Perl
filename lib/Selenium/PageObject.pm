@@ -1,7 +1,10 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.003';
+    $Selenium::PageObject::VERSION = '0.004';
 }
+
+use strict;
+use warnings;
 
 use Carp;
 use Scalar::Util qw(reftype blessed);
@@ -49,7 +52,7 @@ sub new {
         'page'       => $uri
     };
 
-    $self->{'drivertype'} ?  $driver->open($url) : $driver->get($uri); #Get initial page based on what type of driver used
+    $self->{'drivertype'} ?  $driver->open($uri) : $driver->get($uri); #Get initial page based on what type of driver used
 
     bless $self, $class;
     return $self;
@@ -124,9 +127,9 @@ sub getElements {
     my $elements = [];
     confess ("WWW::Selenium is designed to work with single elements.  Consider refining your selectors and looping instead.") if $self->{'drivertype'};
     try {
-        @elements = $self->{'driver'}->find_elements($selector,$selectortype);
+        @$elements = $self->{'driver'}->find_elements($selector,$selectortype);
     };
-    return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype])} @elements;
+    return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype])} @$elements;
 }
 
 =head1 GLOBAL EVENTS

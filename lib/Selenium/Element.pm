@@ -15,12 +15,16 @@ Also creates a unified set/get interface for all inputs.
 Create a new Selenium::Element.  You should never have to use/override this except in the most extreme of circumstances.
 Use getElement/getElements instead.
 
-INPUTS:
-  ELEMENT (MIXED) - Either the WWW::Selenium locator string or a Selenium::Remote::WebElement, depending on your driver
-  DRIVER (MIXED) - Either a WWW::Selenium element or false, depending on your driver (the WebElement has the driver in the latter case)
-  SELECTOR (ARRAYREF[string]) - Arrayref of the form [selector,selectortype]
+B<INPUTS>:
 
-OUTPUTS:
+I<ELEMENT (MIXED)> - Either the WWW::Selenium locator string or a Selenium::Remote::WebElement, depending on your driver
+
+I<DRIVER (MIXED)> - Either a WWW::Selenium element or false, depending on your driver (the WebElement has the driver in the latter case)
+
+I<SELECTOR (ARRAYREF[string])> - Arrayref of the form [selector,selectortype]
+
+B<OUTPUT>:
+
   new Selenium::Element
 
 =cut
@@ -253,11 +257,11 @@ sub get_options {
 
 Returns whether this element has a child option with the provided name, provided this object is a select.
 
-INPUT:
-  OPTION (STRING) - the name of the desired option
+B<INPUT>:
+I<OPTION (STRING)> - the name of the desired option
 
-OUTPUT:
-  BOOLEAN - whether this object has said option as a child
+B<OUTPUT>:
+I<BOOLEAN> - whether this object has said option as a child
 
 =cut
 
@@ -287,10 +291,9 @@ sub is_selected {
 
 Returns the current value of the element.
 
-INPUT:
+B<OUTPUT>:
 
-OUTPUT:
-  MIXED - Depends on the type of element.
+I<MIXED> - Depends on the type of element.
     Boolean for checkboxes, options and radiobuttons
     Arrayrefs of option names for multi-selects
     Strings for single selects, text/hidden inputs and non-inputs like paragraphs, table cells, etc.
@@ -367,19 +370,22 @@ sub clear {
     return 1;
 }
 
-=head2 set(value,callback)
+=head2 set(value,[callback])
 
 Set the value of the input to the provided value, and execute the provided callback if provided.
 The callback will be provided with the caller and the selenium driver as arguments.
 
-INPUT:
-  VALUE (MIXED) - STRING, BOOLEAN or ARRAYREF, depending on the type of element you are attempting to set.
+B<INPUT>:
+
+I<VALUE (MIXED)> - STRING, BOOLEAN or ARRAYREF, depending on the type of element you are attempting to set.
     Strings are for textinputs, hiddens or non-multi selects, Booleans for radiobuttons, checkboxes and options, and Arrayrefs of strings for multiselects.
     Selects take the name of the option as arguments.
-  STRING (CODE) - some anonymous function
 
-OUTPUT:
-  MIXED - whether the set succeeded, or whatever your callback feels like returning, supposing you provided one.
+I<CALLBACK (CODE) [optional]> - some anonymous function
+
+B<OUTPUT>:
+
+I<MIXED> - whether the set succeeded, or whatever your callback feels like returning, supposing you provided one.
 
 =cut
 
@@ -462,10 +468,13 @@ sub _doCallback {
 Execute an arbitrary Javascript string and return the output.
 Handy in callbacks that wait for JS events.
 
-INPUT:
-  JS (STRING) - any valid javascript string
-OUTPUT:
-  MIXED - depends on your javascript's output.
+B<INPUT>:
+
+I<JS (STRING)> - any valid javascript string
+
+B<OUTPUT>:
+
+I<MIXED> - depends on your javascript's output.
 
 =cut
 
@@ -490,15 +499,17 @@ sub click {
     return $self->_doCallback($callback) || 1;
 }
 
-=head2 submit
+=head2 submit([callback])
 
 Submit the element, supposing it's a form
 
-INPUT:
-  CALLBACK (CODE) - anonymous function
+B<INPUT>:
 
-OUPUT:
-  MIXED - Whether the action succeeded or whatever your callback returns, supposing it was provided.
+I<CALLBACK (CODE) [optional]> - anonymous function
+
+B<OUPUT>:
+
+I<MIXED> - Whether the action succeeded or whatever your callback returns, supposing it was provided.
 
 =cut
 

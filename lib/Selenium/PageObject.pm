@@ -1,6 +1,6 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.002';
+    $Selenium::PageObject::VERSION = '0.003';
 }
 
 use Carp;
@@ -24,11 +24,14 @@ Refer to the other module in this distribution L<Selenium::Element> for the rest
 Create a new PageObject using the provided driver, and navigate to the provided URI.
 If you have subclassed your driver, you will need to override this method to not do it's strict driver class checks.
 
-INPUTS:
-  DRIVER (WWW::Selenium or Selenium::Remote::Driver) - The driver object
-  URI (STRING) - the page this object should fiddle with (saved as $self->{'page'})
+B<INPUTS>:
 
-OUTPUTS:
+I<DRIVER (WWW::Selenium or Selenium::Remote::Driver)> - The driver object
+
+I<URI (STRING)> - the page this object should fiddle with (saved as $self->{'page'})
+
+B<OUTPUT>:
+
   new Selenium::PageObject object
 
 =cut
@@ -56,10 +59,14 @@ sub new {
 
 Get the first element matching the provided selector and selector type.  Refer to your driver's documentation as to valid types.
 
-INPUTS:
-  SELECTOR (STRING) - Instructions for finding some element on the page
-  SELECTORTYPE (STRING) - Specifiation by which above instructions are parsed
-OUTPUTS:
+B<INPUTS>:
+
+I<SELECTOR (STRING)> - Instructions for finding some element on the page
+
+I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+
+B<OUTPUT>:
+
   new Selenium::Element object
 
 =cut
@@ -85,11 +92,15 @@ sub getElement {
 Get the elements matching the provided selector and selector type.  Refer to your driver's documentation as to valid types.
 WWW::Selenium is designed to work with single elements, so this method will fail when using it.  Consider refining your selectors and looping instead.
 
-INPUTS:
-  SELECTOR (STRING) - Instructions for finding some element on the page
-  SELECTORTYPE (STRING) - Specifiation by which above instructions are parsed
-OUTPUTS:
-  new Selenium::Element object
+B<INPUTS>:
+
+I<SELECTOR (STRING)> - Instructions for finding some element on the page
+
+I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+
+B<OUTPUT>:
+
+  array of new Selenium::Element objects
 
 =cut
 

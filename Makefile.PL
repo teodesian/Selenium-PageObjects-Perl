@@ -23,12 +23,48 @@ WriteMakefile(
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },
-         resources => {
+        name        => 'Selenium::PageObject',
+        abstract    => "Perl implementation of selenium PageObjects",
+        author      => ['George S. Baugh <teodesian@cpan.org>'],
+        resources   => {
              repository => {
                  type => 'git',
                  url  => 'https://github.com/teodesian/Selenium-PageObjects-Perl.git',
                  web  => 'https://github.com/teodesian/Selenium-PageObjects-Perl',
              },
-         },
+        },
+        license => ['artistic_2'],
+        prereqs => {
+            runtime => {
+                requires => {
+                    'perl'                     => '5.010',
+                    "Carp"                     => 0,
+                    "Scalar::Util"             => 0,
+                    "Try::Tiny"                => 0,
+                    "Selenium::Remote::Driver" => 0 #Used for WDKeys
+                }
+            },
+            test => {
+                requires => {
+                    "Test::More"               => 0,
+                    "Test::Fatal"              => 0,
+                    "Test::Deep"               => 0,
+                    "Selenium::Remote::Driver" => 0,
+                    "WWW::Selenium"            => 0,
+                    "File::Basename"           => 0,
+                    "Cwd"                      => 0
+                },
+            }
+        },
+        provides => {
+            'Selenium::PageObject' => {
+                file    => 'lib/Selenium/PageObject.pm',
+                version => '0.006'
+            },
+            'Selenium::Element' => {
+                file    => 'lib/Selenium/Element.pm',
+                version => '0.006'
+            }
+        }
     }
 );

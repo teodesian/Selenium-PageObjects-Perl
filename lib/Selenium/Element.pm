@@ -7,9 +7,9 @@ use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
 use Data::Random;
 
-=pod
+=head1 NAME
 
-=NAME Selenium::Element
+Selenium::Element - Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
 
 =head1 SYNOPSIS
 

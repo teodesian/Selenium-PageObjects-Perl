@@ -1,6 +1,6 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.005';
+    $Selenium::PageObject::VERSION = '0.006';
 }
 
 use strict;
@@ -13,9 +13,9 @@ use Try::Tiny;
 use Selenium::Remote::WDKeys; #Needed to send things like tabs for navigation
 use Selenium::Element;
 
-=pod
+=head1 NAME
 
-=NAME Selenium::PageObject
+Selenium::PageObject - Selenium's PageObject pattern in Perl.  Now your module @ISA pageObject!
 
 =head1 SYNOPSIS
 

@@ -20,5 +20,15 @@ WriteMakefile(
         "Scalar::Util"             => 0,
         "Try::Tiny"                => 0,
         "Selenium::Remote::Driver" => 0 #Used for WDKeys
+    },
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+         resources => {
+             repository => {
+                 type => 'git',
+                 url  => 'https://github.com/teodesian/Selenium-PageObjects-Perl.git',
+                 web  => 'https://github.com/teodesian/Selenium-PageObjects-Perl',
+             },
+         },
     }
 );

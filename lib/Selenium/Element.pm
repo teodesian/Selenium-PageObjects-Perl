@@ -7,6 +7,10 @@ use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
 use Data::Random;
 
+=pod
+
+=NAME Selenium::Element
+
 =head1 SYNOPSIS
 
 Smooths out the interface between WWW::Selenium and Selenium::Remote::Driver elements.

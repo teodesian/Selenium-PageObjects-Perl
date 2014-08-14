@@ -1,6 +1,6 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.004';
+    $Selenium::PageObject::VERSION = '0.005';
 }
 
 use strict;
@@ -12,6 +12,10 @@ use Try::Tiny;
 
 use Selenium::Remote::WDKeys; #Needed to send things like tabs for navigation
 use Selenium::Element;
+
+=pod
+
+=NAME Selenium::PageObject
 
 =head1 SYNOPSIS
 

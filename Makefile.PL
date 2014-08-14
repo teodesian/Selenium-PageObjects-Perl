@@ -16,8 +16,9 @@ WriteMakefile(
         "Cwd"                      => 0
     },
     PREREQ_PM => {
-        "Carp"                => 0,
-        "Scalar::Util"        => 0,
-        "Try::Tiny"           => 0
+        "Carp"                     => 0,
+        "Scalar::Util"             => 0,
+        "Try::Tiny"                => 0,
+        "Selenium::Remote::Driver" => 0 #Used for WDKeys
     }
 );

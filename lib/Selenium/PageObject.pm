@@ -140,7 +140,7 @@ Send a tab to the page, to test tab navigation, or to de-focus the current eleme
 sub tab {
     my $self = shift;
     #9 is VK_TAB
-    $self->{'drivertype'} ? $self->driver->key_press_native(9)) : $self->driver->send_keys_to_active_element(KEYS->{'tab'}) ;
+    $self->{'drivertype'} ? $self->driver->key_press_native(9) : $self->driver->send_keys_to_active_element(KEYS->{'tab'});
 }
 
 1;

@@ -2,6 +2,7 @@ package Selenium::Element;
 
 use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
+use Data::Random;
 
 =head1 SYNOPSIS
 
@@ -219,7 +220,7 @@ sub is_hiddeninput {
     return $self->get_type() eq 'hidden';
 }
 
-=head2 is_hiddeninput
+=head2 is_enabled
 
 Returns whether the element is a disabled input.
 
@@ -459,6 +460,24 @@ sub _doCallback {
     my ($self,$cb) = @_;
     return 0 if !$cb;
     return &$cb($self,$self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+}
+
+=head2 randomize(options)
+
+Randomizes the input, depending on the type of element.  Useful for fuzzing.
+
+B<INPUT>:
+
+I<HASH>: Options appropraite to the relevant Data::Random method.
+
+B<OUTPUT>:
+
+I<MIXED> - Random value that has been set into the field, or false on failure.
+
+=cut
+
+sub randomize {
+
 }
 
 =head1 STATE CHANGE METHODS

@@ -1,5 +1,5 @@
 Selenium::Element->randomize() - randomize inputs
-Selenium::PageObject->tab() - tab navigate
+TEST Selenium::PageObject->tab()
 
-Selenium::Element->navigate() - navigate HTML5 menu
+Selenium::Element->navigate() - navigate HTML5 menu?
 ...and handle all the new HTML5 input types...

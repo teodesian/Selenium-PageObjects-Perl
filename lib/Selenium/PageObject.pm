@@ -6,6 +6,8 @@ package Selenium::PageObject;
 use Carp;
 use Scalar::Util qw(reftype blessed);
 use Try::Tiny;
+
+use Selenium::Remote::WDKeys; #Needed to send things like tabs for navigation
 use Selenium::Element;
 
 =head1 SYNOPSIS
@@ -51,6 +53,19 @@ sub new {
 
     bless $self, $class;
     return $self;
+}
+
+=head1 UTILITY
+
+=head2 driver
+
+The base selenium driver is available to you here.
+
+=cut
+
+sub driver {
+    my $self = shift;
+    return $self->{'driver'};
 }
 
 =head1 GETTERS
@@ -112,6 +127,20 @@ sub getElements {
         @elements = $self->{'driver'}->find_elements($selector,$selectortype);
     };
     return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype])} @elements;
+}
+
+=head1 GLOBAL EVENTS
+
+=head2 tab
+
+Send a tab to the page, to test tab navigation, or to de-focus the current element (useful for lose focus listeners, etc).
+
+=cut
+
+sub tab {
+    my $self = shift;
+    #9 is VK_TAB
+    $self->{'drivertype'} ? $self->driver->key_press_native(9)) : $self->driver->send_keys_to_active_element(KEYS->{'tab'}) ;
 }
 
 1;

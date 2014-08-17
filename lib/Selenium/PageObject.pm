@@ -1,6 +1,6 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.006';
+    $Selenium::PageObject::VERSION = '0.007';
 }
 
 use strict;

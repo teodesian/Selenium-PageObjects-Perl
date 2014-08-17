@@ -3,3 +3,4 @@ v0.003 - Corrected POD errors, added tab() method
 v0.004 - use strict/warnings, fixed an issue in the WWW::Selenium bootup code
 v0.005 - RT 98017 - link2gitrepos
 v0.006 - RT 98018 - NAME in pod
+v0.007 - More Kwalitee

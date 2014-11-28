@@ -13,7 +13,9 @@ WriteMakefile(
         "Selenium::Remote::Driver" => 0,
         "WWW::Selenium"            => 0,
         "File::Basename"           => 0,
-        "Cwd"                      => 0
+        "Cwd"                      => 0,
+        "Test::Pod"                => 0,
+        "Test::Pod::Coverage"      => 0
     },
     PREREQ_PM => {
         "Carp"                     => 0,
@@ -54,18 +56,20 @@ WriteMakefile(
                     "Selenium::Remote::Driver" => 0,
                     "WWW::Selenium"            => 0,
                     "File::Basename"           => 0,
-                    "Cwd"                      => 0
+                    "Cwd"                      => 0,
+                    "Test::Pod"                => 0,
+                    "Test::Pod::Coverage"      => 0
                 },
             }
         },
         provides => {
             'Selenium::PageObject' => {
                 file    => 'lib/Selenium/PageObject.pm',
-                version => '0.009'
+                version => '0.010'
             },
             'Selenium::Element' => {
                 file    => 'lib/Selenium/Element.pm',
-                version => '0.009'
+                version => '0.010'
             }
         }
     }

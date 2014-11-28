@@ -6,3 +6,4 @@ v0.006 - RT 98018 - NAME in pod
 v0.007 - More Kwalitee
 v0.008 - Fix undeclared dep on Data::Random in Selenium::Element
 v0.009 - Fix some incorrect POD discovered with pod testing
+v0.010 - Add test deps for said POD testing

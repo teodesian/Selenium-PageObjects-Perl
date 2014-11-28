@@ -8,3 +8,4 @@ lib/Selenium/PageObject.pm
 lib/Selenium/Element.pm
 t/Selenium-PageObject.t
 t/test.html
+t/pod.t

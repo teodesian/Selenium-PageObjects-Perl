@@ -189,9 +189,9 @@ sub is_fileinput {
     return $self->get_type() eq 'file';
 }
 
-=head2 is_fileinput
+=head2 is_form
 
-Returns whether the element is an input of the type 'file'.
+Returns whether the element is a form.
 
 =cut
 

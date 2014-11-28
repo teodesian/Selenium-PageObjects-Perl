@@ -61,11 +61,11 @@ WriteMakefile(
         provides => {
             'Selenium::PageObject' => {
                 file    => 'lib/Selenium/PageObject.pm',
-                version => '0.008'
+                version => '0.009'
             },
             'Selenium::Element' => {
                 file    => 'lib/Selenium/Element.pm',
-                version => '0.008'
+                version => '0.009'
             }
         }
     }

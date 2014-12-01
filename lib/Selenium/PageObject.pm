@@ -160,9 +160,11 @@ L<WWW::Selenium>
 
 L<Selenium::Remote::Driver>
 
-https://code.google.com/p/selenium/wiki/PageFactory for info about PageFactories, like this
+L<https://code.google.com/p/selenium/wiki/PageFactory>
+for info about PageFactories, like this
 
-https://code.google.com/p/selenium/wiki/PageObjects for more info about page objects themselves.
+L<https://code.google.com/p/selenium/wiki/PageObjects>
+for more info about page objects themselves.
 
 =head1 AUTHOR
 

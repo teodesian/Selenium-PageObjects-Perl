@@ -1,6 +1,8 @@
 Revision history for Perl module Selenium::PageObject
 
 0.011 2014-12-?? TEODESIAN
+    - The distname was getting set as Selenium::PageObject (eg in META.yml),
+      where it should have been Selenium-PageObject.
     - Reformatted this file (Changes) as per CPAN::Changes::Spec
 
 0.010 2014-11-28 TEODESIAN

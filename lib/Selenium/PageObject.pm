@@ -167,6 +167,10 @@ for info about PageFactories, like this
 L<https://code.google.com/p/selenium/wiki/PageObjects>
 for more info about page objects themselves.
 
+=head1 REPOSITORY
+
+L<https://github.com/teodesian/Selenium-PageObjects-Perl>
+
 =head1 AUTHOR
 
 George S. Baugh <teodesian@cpan.org>

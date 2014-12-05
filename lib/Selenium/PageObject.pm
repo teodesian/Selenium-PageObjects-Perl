@@ -1,7 +1,7 @@
+# ABSTRACT: Selenium's PageObject pattern in Perl.  Now your module @ISA pageObject!
+# PODNAME: Selenium::PageObject
+
 package Selenium::PageObject;
-{
-    $Selenium::PageObject::VERSION = '0.011';
-}
 
 use 5.010;
 use strict;
@@ -14,11 +14,7 @@ use Try::Tiny;
 use Selenium::Remote::WDKeys; #Needed to send things like tabs for navigation
 use Selenium::Element;
 
-=head1 NAME
-
-Selenium::PageObject - Selenium's PageObject pattern in Perl.  Now your module @ISA pageObject!
-
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 This module is intended to be a base for PageObjects.
 It abstracts a good deal of the things required to get/set various page inputs, and provides callback hooks so you can do special things like wait for JS.
@@ -26,6 +22,16 @@ It also is driver agnostic -- use WWW::Selenium or Selenium::Remote::Driver if y
 I recommend Selenium::Remote::Driver due to it having a more complete feature set.
 
 Refer to the other module in this distribution L<Selenium::Element> for the rest.
+
+=head1 SYNOPSIS
+
+    package ExamplePageObject;
+    use base qw{Selenium::PageObject};
+    sub do_something_cool_returning_an_element {
+        my $self = shift;
+        return $self->getElement('radElement','id');
+    }
+    1;
 
 =head1 CONSTRUCTOR
 
@@ -86,7 +92,7 @@ B<INPUTS>:
 
 I<SELECTOR (STRING)> - Instructions for finding some element on the page
 
-I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+I<SELECTORTYPE (STRING)> - Specification by which above instructions are parsed
 
 B<OUTPUT>:
 
@@ -119,7 +125,7 @@ B<INPUTS>:
 
 I<SELECTOR (STRING)> - Instructions for finding some element on the page
 
-I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+I<SELECTORTYPE (STRING)> - Specification by which above instructions are parsed
 
 B<OUTPUT>:
 
@@ -141,7 +147,7 @@ sub getElements {
 
 =head2 tab
 
-Send a tab to the page, to test tab navigation, or to de-focus the current element (useful for lose focus listeners, etc).
+Send a tab to the page, to test tab navigation, or to blur the current element (useful for lose focus listeners, etc).
 
 =cut
 
@@ -167,24 +173,6 @@ for info about PageFactories, like this
 L<https://code.google.com/p/selenium/wiki/PageObjects>
 for more info about page objects themselves.
 
-=head1 REPOSITORY
-
-L<https://github.com/teodesian/Selenium-PageObjects-Perl>
-
-=head1 AUTHOR
-
-George S. Baugh <teodesian@cpan.org>
-
-=head1 CONTRIBUTORS
-
-Neil Bowers <neil@bowers.com> - Fixed minor distribution issues for 0.011
-
 =head1 SPECIAL THANKS
 
 cPanel, Inc. graciously funded the initial work on this Module.
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by George S. Baugh.
-
-This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.

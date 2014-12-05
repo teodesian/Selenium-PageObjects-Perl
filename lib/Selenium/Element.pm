@@ -1,5 +1,9 @@
+# ABSTRACT: Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
+# PODNAME: Selenium::Element
+
 package Selenium::Element;
 
+use 5.010;
 use strict;
 use warnings;
 
@@ -7,14 +11,28 @@ use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
 use Data::Random;
 
-=head1 NAME
-
-Selenium::Element - Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
-
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Smooths out the interface between WWW::Selenium and Selenium::Remote::Driver elements.
 Also creates a unified set/get interface for all inputs.
+
+=head1 SYNOPSIS
+
+    package ExamplePageObject;
+    use base qw{Selenium::PageObject};
+    sub do_something_returning_an_element {
+        my $self = shift;
+        return $self->getElement('radElement','id');
+    }
+    1;
+
+    use Selenium::Remote::Driver;
+
+    my $driver = Selenium::Remote::Driver->new({'remote_server_addr' => '127.0.0.1'});
+    my $pobj = ExamplePageObject->new($driver);
+    my $element = $pobj->do_something_returning_an_element();
+    my $status = $element->get();
+    $element->set('supercool') if $status ne 'supercool';
 
 =head1 CONSTRUCTOR
 
@@ -155,7 +173,7 @@ sub is_radio {
 
 =head2 is_checkbox
 
-Returns whether the element is a checkbox.
+Returns whether the element is a check box.
 
 =cut
 
@@ -250,7 +268,6 @@ sub get_options {
     my $self = shift;
     confess("Object parameters must be called by an instance") unless ref($self);
     return () unless $self->is_select();
-    my @options = ();
     if ($self->{'driver'}) {
         #XXX obviously not reliable
         carp("WARNING: WWW::Selenium has reduced ability to get options!  This may not work as you expect.");
@@ -302,7 +319,7 @@ Returns the current value of the element.
 B<OUTPUT>:
 
 I<MIXED> - Depends on the type of element.
-    Boolean for checkboxes, options and radiobuttons
+    Boolean for check boxes, options and radio buttons
     Arrayrefs of option names for multi-selects
     Strings for single selects, text/hidden inputs and non-inputs like paragraphs, table cells, etc.
 
@@ -311,8 +328,6 @@ I<MIXED> - Depends on the type of element.
 sub get {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
-
-    my $ret = 0;
 
     #Try to get various stuff based on what it is
     if ($self->is_checkbox || $self->is_radio) {
@@ -386,7 +401,7 @@ The callback will be provided with the caller and the selenium driver as argumen
 B<INPUT>:
 
 I<VALUE (MIXED)> - STRING, BOOLEAN or ARRAYREF, depending on the type of element you are attempting to set.
-    Strings are for textinputs, hiddens or non-multi selects, Booleans for radiobuttons, checkboxes and options, and Arrayrefs of strings for multiselects.
+    Strings are for text inputs, hidden inputs or non-multi selects, Booleans for radio buttons, check boxes and options, and Arrayrefs of strings for multi-selects.
     Selects take the name of the option as arguments.
 
 I<CALLBACK (CODE) [optional]> - some anonymous function
@@ -437,7 +452,7 @@ sub set {
             $value = [$value] if reftype($value) ne 'ARRAY';
             if ($self->{'driver'}) {
                 foreach my $val (@$value) {
-                    $self->{'driver'}->type($self->{'element'},$value);
+                    $self->{'driver'}->type($self->{'element'},$val);
                 }
             } else {
                 foreach my $val ($self->get_options()) {
@@ -475,7 +490,7 @@ Randomizes the input, depending on the type of element.  Useful for fuzzing.
 
 B<INPUT>:
 
-I<HASH>: Options appropraite to the relevant Data::Random method.
+I<HASH>: Options appropriate to the relevant Data::Random method.
 
 B<OUTPUT>:
 
@@ -533,7 +548,7 @@ B<INPUT>:
 
 I<CALLBACK (CODE) [optional]> - anonymous function
 
-B<OUPUT>:
+B<OUTPUT>:
 
 I<MIXED> - Whether the action succeeded or whatever your callback returns, supposing it was provided.
 
@@ -559,16 +574,6 @@ L<WWW::Selenium>
 
 L<Selenium::Remote::Driver>
 
-=head1 AUTHOR
-
-George S. Baugh <teodesian@cpan.org>
-
 =head1 SPECIAL THANKS
 
 cPanel, Inc. graciously funded the initial work on this Module.
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2014 by George S. Baugh.
-
-This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.

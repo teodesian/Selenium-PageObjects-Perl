@@ -154,7 +154,7 @@ Send a tab to the page, to test tab navigation, or to blur the current element (
 sub tab {
     my $self = shift;
     #9 is VK_TAB
-    $self->{'drivertype'} ? $self->driver->key_press_native(9) : $self->driver->send_keys_to_active_element(KEYS->{'tab'});
+    return $self->{'drivertype'} ? $self->driver->key_press_native(9) : $self->driver->send_keys_to_active_element(KEYS->{'tab'});
 }
 
 1;

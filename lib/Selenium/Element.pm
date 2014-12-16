@@ -58,7 +58,7 @@ B<OUTPUT>:
 sub new {
     my ($class,$element,$driver,$selector) = @_;
     confess("Constructor must be called statically, not by an instance") if ref($class);
-    return undef if !$element;
+    return 0 if !$element;
     confess("Element driver invalid: must be WWW::Selenium object or false (element is a Selenium::Remote::Webelement)") unless $driver == 0 || (blessed($driver) && blessed($driver) eq 'WWW::Selenium' );
 
     my $self = {
@@ -101,7 +101,7 @@ Returns the type of the Element object if it is an input tag.
 sub get_type {
     my $self = shift;
     confess("Object parameters must be called by an instance") unless ref($self);
-    return undef unless $self->is_input;
+    return 0 unless $self->is_input;
     return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'}.'@type') : $self->{'element'}->get_attribute('type');
 }
 
@@ -343,9 +343,8 @@ sub get {
         return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'value') : $self->{'element'}->get_attribute('value');
     } elsif ($self->is_option) {
         return $self->{'driver'} ? defined $self->{'driver'}->get_attribute($self->{'element'},'selected') : defined $self->{'element'}->get_attribute('selected');
-    } else {
-        $self->{'driver'} ? $self->{'driver'}->get_text($self->{'element'}) : $self->{'element'}->get_text();
     }
+    return $self->{'driver'} ? $self->{'driver'}->get_text($self->{'element'}) : $self->{'element'}->get_text();
 }
 
 =head2 id
@@ -420,7 +419,7 @@ sub set {
 
     my $enabled = $self->is_enabled();
     carp "Attempting to set disabled element" unless $enabled;
-    return undef unless $enabled;
+    return 0 unless $enabled;
     my $ret = 0;
 
     #Try to set various stuff based on what it is
@@ -487,6 +486,7 @@ sub _doCallback {
 =head2 randomize(options)
 
 Randomizes the input, depending on the type of element.  Useful for fuzzing.
+UNIMPLEMENTED.
 
 B<INPUT>:
 
@@ -499,7 +499,7 @@ I<MIXED> - Random value that has been set into the field, or false on failure.
 =cut
 
 sub randomize {
-
+    return croak("NOT IMPLEMENTED");
 }
 
 =head1 STATE CHANGE METHODS

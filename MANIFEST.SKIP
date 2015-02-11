@@ -5,3 +5,8 @@ weaver.ini
 README.md
 .git/*
 .gitignore
+tidyall.ini
+environment.sh
+.build/*
+Selenium-PageObject-*/
+cover/*

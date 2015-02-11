@@ -1,6 +1,9 @@
 Selenium-PageObjects-Perl
 =========================
 
+<img src="https://travis-ci.org/teodesian/Selenium-PageObjects-Perl.svg" alt="Travis CI build status" />
+<a href='https://coveralls.io/r/teodesian/Selenium-PageObjects-Perl'><img src='https://coveralls.io/repos/teodesian/Selenium-PageObjects-Perl/badge.svg' alt='Coverage Status' /></a>
+
 Perl module/class to help create Page Objects.  Analogous to Selenium's PageFactory Class.
 Can use both WWW::Selenium and Selenium::Remote::Driver objects as drivers.
 
